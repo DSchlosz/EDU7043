@@ -7,29 +7,67 @@ str(pal)
 
 #I'm interested in porn usage by christians, sex before marriage by christians, sex outside of marriage, and speaking to gay people.
 library(plyr)
-pal<-rename(pal, c(AMA3W1="nosex", ARQ7W1="sexinm", IC_10W1="spkgay", MA_5W1="porn"))
+pal<-rename(pal, c(AMA3W1="nosex", ARQ7W1="sexinm", MA_5W1="porn"))
 
 #See if changes came through
 names(pal)
 
+# create a subset
+Naughty<-pal[c(1:100), c(7, 58, 228)]
+
 #Let's look more at these variables. Are there any na's? #How many?
-table(is.na(pal$nosex))
-table(is.na(pal$sexinm))
-table(is.na(pal$spkgay))
-table(is.na(pal$porn))
+table(is.na(Naughty$nosex))
+table(is.na(Naughty$sexinm))
+table(is.na(Naughty$porn))
+
+#Remove NAs
 
 
 #What is the central tendency of these variables?
-summary(pal$porn)
-summary(pal$nosex)
-summary(pal$spkgay)
-summary(pal$sexinm)
+summary(Naughty$porn)
+summary(Naughty$nosex)
+summary(Naughty$sexinm)
+
+#Mode function:
+mode<-function(x) {
+  unique_val<-unique(x)
+  counts<-vector()
+  for(i in 1: length(unique_val)){
+    counts[i]<- length(which(x==unique_val[i]))
+  }
+  position<-c(which(counts==max(counts)))
+  if(length(unique_val)==length(x))
+    mode_x<-'Mode does not exist'
+  else
+    mode_x<-unique_val[position]
+  return(mode_x)
+}
+
+#Determine Mode
+mode(Naughty$nosex)
+mode(Naughty$sexinm)
+mode(Naughty$porn)
+
+#load from psych package
+library(psych)
+
+#variance and range
+describe(Naughty$nosex)
+describe(Naughty$sexinm)
+describe(Naughty$porn)
+
+var(Naughty$nosex)
+var(Naughty$sexinm)
+var(Naughty$porn)
+
+
+
+
 
 #Are these variables normally distributed? What tools do we have to begin to answer this question?
-hist(pal$porn)
-hist(pal$nosex)
-hist(pal$spkgay)
-hist(pal$sexinm)
+hist(Naughty$porn)
+hist(Naughty$nosex)
+hist(Naughty$sexinm)
 
 #I'm Making a Fake Data Set that appoximates normality
 ex<-rnorm(10000, mean=0, sd=1)
@@ -55,20 +93,19 @@ Dist_lines<-function(x){
 Dist_lines(ex)
 
 #Function that I created does not like NAs, so let's remove them and create a new object
-nosex<-subset(pal, !is.na(pal$nosex))
+nosex<-subset(Naughty, !is.na(Naughty$nosex))
 Dist_lines(nosex$nosex)
 
-porn<-subset(pal, !is.na(pal$porn))
+porn<-subset(Naughty, !is.na(Naughty$porn))
 Dist_lines(porn$porn)
 
-
-sexinm<-subset(pal, !is.na(pal$sexinm))
+sexinm<-subset(Naughty, !is.na(Naughty$sexinm))
 Dist_lines(sexinm$sexinm)
 
 
-#Another way to think about normality
-#Q-Q Plots - Let's try our fake data first
-qqnorm(ex); qqline(ex)
 
-#Now let's try our real data
+
+#run plot
 qqnorm(porn$porn); qqline(porn$porn)
+qqnorm(nosex$nosex); qqline(nosex$nosex)
+qqnorm(sexinm$sexinm); qqline(sexinm$sexinm)
